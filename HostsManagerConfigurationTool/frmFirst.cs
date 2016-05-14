@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace HostsManagerConfigurationTool
 {
-    public partial class frmFirst : Form
-    {
-        public frmFirst()
-        {
-            InitializeComponent();
-        }
+	public partial class frmFirst : Form
+	{
+		public frmFirst()
+		{
+			InitializeComponent();
+		}
 
-        private void btnWizard_Click(object sender, EventArgs e)
-        {
-            new frmWizard1().Show();
-            Hide();
-        }
-    }
+		private void btnWizard_Click(object sender, EventArgs e)
+		{
+			new frmWizard1().Show();
+			Hide();
+		}
+	}
 }

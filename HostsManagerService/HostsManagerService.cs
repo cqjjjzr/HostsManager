@@ -12,15 +12,12 @@ namespace HostsManagerService
 {
     public partial class HostsManagerService : ServiceBase
     {
-        private StreamWriter log;
-        private StreamReader configFile;
         private System.Timers.Timer serverTimer;
         private System.Timers.Timer configTimer;
         private Config config;
         private TcpListener tl;
         private Thread accept;
         private System.Timers.Timer suspendTimer;
-        private DateTime lastChanged;
 
         public static bool avaliable = false;
         
@@ -60,9 +57,7 @@ namespace HostsManagerService
             {
                 System.Windows.Forms.MessageBox.Show(exc.Message);
                 if (!Directory.Exists("C:\\HostsManager")) Directory.CreateDirectory("C:\\HostsManager");
-                log = new StreamWriter("C:\\HostsManager\\hmservice.log", true);
-                log.Write(exc);
-                log.Close();
+                File.AppendAllText("C:\\HostsManager\\hmservice.log", exc.ToString());
             }
         }
 
@@ -78,6 +73,9 @@ namespace HostsManagerService
         protected override void OnStop()
         {
             wlog("I", "Service stopped.");
+            suspendTimer.Stop();
+            serverTimer.Close();
+            configTimer.Close();
         }
 
         public void time(object source, System.Timers.ElapsedEventArgs e)
@@ -140,9 +138,7 @@ namespace HostsManagerService
 
         public void wlog(string status, string msg)
         {
-            log = new StreamWriter("C:\\HostsManager\\hmservice.log", true);
-            log.WriteLine("[" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "] [" + status + "] [HostsManagerService] " + msg);
-            log.Close();
+            File.AppendAllText("C:\\HostsManager\\hmservice.log", "[" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + "] [" + status + "] [HostsManagerService] " + msg);
         }
 
         public void accepter()
@@ -162,9 +158,7 @@ namespace HostsManagerService
                 {
                     try
                     {
-                        StreamReader o = new StreamReader("C:\\HostsManager\\" + s + ".json");
-                        Source origin = JsonConvert.DeserializeObject<Source>(o.ReadToEnd());
-                        o.Close();
+                        Source origin = JsonConvert.DeserializeObject<Source>(File.ReadAllText("C:\\HostsManager\\" + s + ".json"));
                         HttpWebRequest hwr = WebRequest.CreateHttp(origin.address);
                         hwr.Method = "GET";
                         HttpWebResponse resp = hwr.GetResponse() as HttpWebResponse;
