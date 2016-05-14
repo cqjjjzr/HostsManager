@@ -107,21 +107,21 @@ namespace HostsManagerConfigurationTool
 		private void btnApply_Click(object sender, EventArgs e)
 		{
 			cfg.lastChanged = DateTime.UtcNow;
-			string json = JsonConvert.SerializeObject(cfg);
-			StreamWriter jfile = new StreamWriter("C:\\HostsManager\\config.json");
-			jfile.Write(json);
-			jfile.Close();
+            File.WriteAllText("C:\\HostsManager\\config.json", JsonConvert.SerializeObject(cfg));
 			IPAddress ip = IPAddress.Parse("127.0.0.1");
 			Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			try
 			{
 				clientSocket.Connect(new IPEndPoint(ip, 8885));
 				clientSocket.Send(Encoding.UTF8.GetBytes("cupdate"));
-				clientSocket.Close();
 			}
 			catch(Exception) {
 				MessageBox.Show("连接到HostsManager服务失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
+            }
+            finally
+            {
+                try { clientSocket.Close(); } catch { }
+            }
 		}
 
 		private void btnServerConfig_Click(object sender, EventArgs e)
